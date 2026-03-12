@@ -172,13 +172,19 @@ export default function App() {
       <nav className="fixed top-0 w-full z-40 bg-black/40 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-black p-2 rounded border border-white/10">
-              <Scissors className="w-8 h-8 text-gold" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-serif text-xl font-bold tracking-tighter text-white italic leading-none">FONSECA</span>
-              <span className="text-[10px] text-gold tracking-[0.2em] font-bold">BARBEARIA</span>
-            </div>
+            {settings.logo_url ? (
+              <img src={settings.logo_url} alt="Logo da Barbearia" className="h-16 w-auto object-contain" />
+            ) : (
+              <>
+                <div className="bg-black p-2 rounded border border-white/10">
+                  <Scissors className="w-8 h-8 text-gold" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-serif text-xl font-bold tracking-tighter text-white italic leading-none">FONSECA</span>
+                  <span className="text-[10px] text-gold tracking-[0.2em] font-bold">BARBEARIA</span>
+                </div>
+              </>
+            )}
           </div>
           
           <div className="hidden lg:flex items-center gap-8 text-sm font-medium text-white/80">

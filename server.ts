@@ -243,6 +243,21 @@ async function startServer() {
     }
   });
 
+  app.post("/api/upload-logo", upload.single("image"), async (req, res) => {
+    console.log("Uploading logo to Supabase...");
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+    try {
+      const publicUrl = await uploadToSupabase(req.file, 'barber-assets');
+      const supabase = getSupabase();
+      await supabase.from('settings').upsert({ key: 'logo_url', value: publicUrl });
+      res.json({ url: publicUrl });
+    } catch (error: any) {
+      console.error("Supabase Storage Error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

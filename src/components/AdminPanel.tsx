@@ -52,7 +52,11 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
   const [uploadProgress, setUploadProgress] = useState(0);
   const [galleryUploadProgress, setGalleryUploadProgress] = useState(0);
   const [galleryImageUploadProgress, setGalleryImageUploadProgress] = useState(0);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [logoUploadProgress, setLogoUploadProgress] = useState(0);
+  
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
   const galleryVideoInputRef = useRef<HTMLInputElement>(null);
   const galleryImageInputRef = useRef<HTMLInputElement>(null);
 
@@ -122,6 +126,42 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
+    }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingLogo(true);
+    setLogoUploadProgress(0);
+
+    try {
+      const supabase = await getSupabase();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `logo-${Date.now()}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('barber-assets')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('barber-assets')
+        .getPublicUrl(fileName);
+
+      setSettings({ ...settings, logo_url: publicUrl });
+      alert('Logo enviada com sucesso!');
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      alert('Erro ao enviar logo: ' + (error.message || 'Erro desconhecido'));
+    } finally {
+      setIsUploadingLogo(false);
+      setLogoUploadProgress(0);
     }
   };
 
@@ -291,6 +331,39 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none"
                   />
                 </div>
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-sm text-zinc-400 uppercase tracking-widest">Logo da Barbearia</label>
+                  <div className="flex gap-4 items-center">
+                    <input
+                      type="text"
+                      value={settings.logo_url || ''}
+                      onChange={(e) => setSettings({ ...settings, logo_url: e.target.value })}
+                      placeholder="URL da logo (fundo transparente PNG recomendado) ou faça upload"
+                      className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none"
+                    />
+                    <input
+                      type="file"
+                      ref={logoInputRef}
+                      onChange={handleLogoUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <button
+                      onClick={() => logoInputRef.current?.click()}
+                      disabled={isUploadingLogo}
+                      className="bg-zinc-800 hover:bg-zinc-700 text-gold px-4 py-3 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50"
+                    >
+                      <Upload className="w-5 h-5" />
+                      {isUploadingLogo ? `Enviando...` : 'Upload da Logo'}
+                    </button>
+                  </div>
+                  {settings.logo_url && (
+                    <div className="mt-4 p-4 bg-zinc-900 rounded-lg inline-block border border-zinc-800">
+                      <img src={settings.logo_url} alt="Logo Preview" className="h-16 object-contain" />
+                    </div>
+                  )}
+                </div>
+
                 <div className="md:col-span-2 space-y-2">
                   <label className="text-sm text-zinc-400 uppercase tracking-widest">Subtítulo Hero</label>
                   <textarea
