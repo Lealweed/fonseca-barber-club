@@ -506,25 +506,36 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
                   />
                 </div>
               )}
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {gallery.map((url: string, i: number) => (
-                  <div key={i} className="flex gap-2 items-center bg-zinc-900 p-3 rounded-xl border border-zinc-800">
-                    <input
-                      placeholder="URL da Imagem"
-                      value={url}
-                      onChange={(e) => {
-                        const newGallery = [...gallery];
-                        newGallery[i] = e.target.value;
-                        setGallery(newGallery);
-                      }}
-                      className="flex-1 bg-zinc-950 border border-zinc-800 rounded p-2 focus:border-gold outline-none"
-                    />
-                    <button
-                      onClick={() => setGallery(gallery.filter((_: any, idx: number) => idx !== i))}
-                      className="text-red-500 p-2 hover:bg-red-500/10 rounded"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                  <div key={i} className="group relative aspect-square bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
+                    {url ? (
+                      <img src={url} alt={`Galeria ${i}`} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-2">
+                        <input
+                          placeholder="URL da Imagem"
+                          value={url}
+                          onChange={(e) => {
+                            const newGallery = [...gallery];
+                            newGallery[i] = e.target.value;
+                            setGallery(newGallery);
+                          }}
+                          className="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs focus:border-gold outline-none"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Hover Controls */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => setGallery(gallery.filter((_: any, idx: number) => idx !== i))}
+                        className="bg-red-500 text-white p-2 rounded-full hover:scale-110 transition-transform"
+                        title="Remover"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -567,25 +578,36 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
                   />
                 </div>
               )}
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {videoGallery.map((url: string, i: number) => (
-                  <div key={i} className="flex gap-2 items-center bg-zinc-900 p-3 rounded-xl border border-zinc-800">
-                    <input
-                      placeholder="URL do Vídeo"
-                      value={url}
-                      onChange={(e) => {
-                        const newVideoGallery = [...videoGallery];
-                        newVideoGallery[i] = e.target.value;
-                        setVideoGallery(newVideoGallery);
-                      }}
-                      className="flex-1 bg-zinc-950 border border-zinc-800 rounded p-2 focus:border-gold outline-none"
-                    />
-                    <button
-                      onClick={() => setVideoGallery(videoGallery.filter((_: any, idx: number) => idx !== i))}
-                      className="text-red-500 p-2 hover:bg-red-500/10 rounded"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                  <div key={i} className="group relative aspect-video bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
+                    {url ? (
+                      <video src={url} className="w-full h-full object-cover" muted loop playsInline />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                        <input
+                          placeholder="URL do Vídeo"
+                          value={url}
+                          onChange={(e) => {
+                            const newVideoGallery = [...videoGallery];
+                            newVideoGallery[i] = e.target.value;
+                            setVideoGallery(newVideoGallery);
+                          }}
+                          className="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-xs focus:border-gold outline-none"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Hover Controls */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => setVideoGallery(videoGallery.filter((_: any, idx: number) => idx !== i))}
+                        className="bg-red-500 text-white p-2 rounded-full hover:scale-110 transition-transform"
+                        title="Remover Vídeo"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
