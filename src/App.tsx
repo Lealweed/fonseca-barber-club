@@ -62,6 +62,12 @@ export default function App() {
 
   const { settings, services, gallery } = content;
   const WHATSAPP_URL = `https://wa.me/${settings.whatsapp_number}`;
+  
+  const plansData = settings.plans ? JSON.parse(settings.plans) : [
+    { name: "Barba Ilimitada", price: "135", save: "22%", cuts: "Ilimitado" },
+    { name: "Corte Ilimitado", price: "75", save: null, cuts: "Ilimitado" },
+    { name: "Cabelo e Barba Ilimitado", price: "135", save: "15%", cuts: "Ilimitado" }
+  ];
 
   return (
     <div className="min-h-screen font-sans selection:bg-gold selection:text-zinc-950 text-white overflow-x-hidden">
@@ -409,11 +415,7 @@ export default function App() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {[
-              { name: "Barba Ilimitada", price: "135", save: "22%", cuts: "Ilimitado" },
-              { name: "Corte Ilimitado", price: "75", save: null, cuts: "Ilimitado" },
-              { name: "Cabelo e Barba Ilimitado", price: "135", save: "15%", cuts: "Ilimitado" }
-            ].map((plano, i) => (
+            {plansData.map((plano: any, i: number) => (
               <motion.div 
                 key={i}
                 whileHover={{ scale: 1.02 }}

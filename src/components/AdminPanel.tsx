@@ -42,6 +42,17 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
   const [activeTab, setActiveTab] = useState<'config' | 'agenda'>('config');
   const [settings, setSettings] = useState(initialData.settings);
   const [services, setServices] = useState(initialData.services);
+  const [plans, setPlans] = useState(() => {
+    try {
+      return initialData.settings.plans ? JSON.parse(initialData.settings.plans) : [
+        { name: "Barba Ilimitada", price: "135", save: "22%", cuts: "Ilimitado" },
+        { name: "Corte Ilimitado", price: "75", save: "", cuts: "Ilimitado" },
+        { name: "Cabelo e Barba Ilimitado", price: "135", save: "15%", cuts: "Ilimitado" }
+      ];
+    } catch {
+      return [];
+    }
+  });
   const [gallery, setGallery] = useState(initialData.gallery.map((g: any) => g.url));
   const [videoGallery, setVideoGallery] = useState(initialData.video_gallery?.map((v: any) => v.url) || []);
   const [appointments, setAppointments] = useState(initialData.appointments || []);
@@ -63,10 +74,11 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      const finalSettings = { ...settings, plans: JSON.stringify(plans) };
       await fetch('/api/admin/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ settings })
+        body: JSON.stringify({ settings: finalSettings })
       });
       await fetch('/api/admin/services', {
         method: 'POST',
@@ -460,6 +472,75 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
                     </div>
                     <button
                       onClick={() => setServices(services.filter((_: any, idx: number) => idx !== i))}
+                      className="text-red-500 p-2 hover:bg-red-500/10 rounded"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Planos */}
+            <section className="space-y-6">
+              <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <Check className="text-gold" /> Planos de Assinatura
+                </h2>
+                <button
+                  onClick={() => setPlans([...plans, { name: '', price: '', save: '', cuts: 'Ilimitado' }])}
+                  className="text-gold flex items-center gap-1 hover:underline"
+                >
+                  <Plus className="w-4 h-4" /> Adicionar Plano
+                </button>
+              </div>
+              <div className="space-y-4">
+                {plans.map((plan: any, i: number) => (
+                  <div key={i} className="flex gap-4 items-start bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+                    <div className="flex-1 grid md:grid-cols-4 gap-4">
+                      <input
+                        placeholder="Nome do Plano"
+                        value={plan.name}
+                        onChange={(e) => {
+                          const newPlans = [...plans];
+                          newPlans[i].name = e.target.value;
+                          setPlans(newPlans);
+                        }}
+                        className="bg-zinc-950 border border-zinc-800 rounded p-2 focus:border-gold outline-none"
+                      />
+                      <input
+                        placeholder="Preço (ex: 135)"
+                        value={plan.price}
+                        onChange={(e) => {
+                          const newPlans = [...plans];
+                          newPlans[i].price = e.target.value;
+                          setPlans(newPlans);
+                        }}
+                        className="bg-zinc-950 border border-zinc-800 rounded p-2 focus:border-gold outline-none"
+                      />
+                      <input
+                        placeholder="Economia (ex: 22%)"
+                        value={plan.save}
+                        onChange={(e) => {
+                          const newPlans = [...plans];
+                          newPlans[i].save = e.target.value;
+                          setPlans(newPlans);
+                        }}
+                        className="bg-zinc-950 border border-zinc-800 rounded p-2 focus:border-gold outline-none"
+                      />
+                      <input
+                        placeholder="Cortes (ex: Ilimitado)"
+                        value={plan.cuts}
+                        onChange={(e) => {
+                          const newPlans = [...plans];
+                          newPlans[i].cuts = e.target.value;
+                          setPlans(newPlans);
+                        }}
+                        className="bg-zinc-950 border border-zinc-800 rounded p-2 focus:border-gold outline-none"
+                      />
+                    </div>
+                    <button
+                      onClick={() => setPlans(plans.filter((_: any, idx: number) => idx !== i))}
                       className="text-red-500 p-2 hover:bg-red-500/10 rounded"
                     >
                       <Trash2 className="w-5 h-5" />
