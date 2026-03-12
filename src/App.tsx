@@ -283,8 +283,8 @@ export default function App() {
                 <Instagram className="w-12 h-12 text-white" />
               </div>
               <h3 className="text-3xl font-bold text-white">Instagram</h3>
-              <p className="text-white/80">@fonsecabarbearia.pbs</p>
-              <a href="#" className="w-full bg-white/20 hover:bg-white/30 text-white py-4 rounded-xl font-bold transition-colors">Seguir Agora</a>
+              <p className="text-white/80">{settings.instagram_handle || '@fonsecabarbearia.pbs'}</p>
+              <a href={settings.instagram_link || '#'} target="_blank" rel="noreferrer" className="w-full bg-white/20 hover:bg-white/30 text-white py-4 rounded-xl font-bold transition-colors">Seguir Agora</a>
             </motion.div>
 
             {/* WhatsApp Card */}
@@ -297,7 +297,7 @@ export default function App() {
               </div>
               <h3 className="text-3xl font-bold text-white">WhatsApp</h3>
               <p className="text-white/80">Resposta rápida</p>
-              <a href={WHATSAPP_URL} className="w-full bg-white/20 hover:bg-white/30 text-white py-4 rounded-xl font-bold transition-colors">Chamar Agora</a>
+              <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="w-full bg-white/20 hover:bg-white/30 text-white py-4 rounded-xl font-bold transition-colors">Chamar Agora</a>
             </motion.div>
 
             {/* Localização Card */}
@@ -325,10 +325,10 @@ export default function App() {
           
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Award, label: "5+", sub: "Anos de Tradição" },
-              { icon: Users, label: "5000+", sub: "Clientes Satisfeitos" },
-              { icon: Star, label: "5.0/5", sub: "Avaliação Média" },
-              { icon: Scissors, label: "Premium", sub: "Atendimento Exclusivo" }
+              { icon: Award, label: settings.stat_anos || "5+", sub: "Anos de Tradição" },
+              { icon: Users, label: settings.stat_clientes || "5000+", sub: "Clientes Satisfeitos" },
+              { icon: Star, label: settings.stat_nota || "5.0/5", sub: "Avaliação Média" },
+              { icon: Scissors, label: settings.stat_atendimento || "Premium", sub: "Atendimento Exclusivo" }
             ].map((stat, i) => (
               <div key={i} className="bg-white/5 backdrop-blur-md border border-white/10 p-10 rounded-[32px] text-center flex flex-col items-center gap-4 group hover:bg-white/10 transition-all">
                 <div className="bg-gold/10 p-4 rounded-full group-hover:scale-110 transition-transform">
@@ -610,7 +610,7 @@ export default function App() {
             Excelência em cada detalhe.
           </p>
           <div className="flex justify-center gap-6 text-white/40 mb-8">
-            <a href="#" className="hover:text-gold transition-colors"><Instagram /></a>
+            <a href={settings.instagram_link || '#'} target="_blank" rel="noreferrer" className="hover:text-gold transition-colors"><Instagram /></a>
             <a href="#" className="hover:text-gold transition-colors"><Facebook /></a>
           </div>
           <button 

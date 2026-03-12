@@ -39,7 +39,7 @@ interface AdminProps {
 }
 
 export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProps) {
-  const [activeTab, setActiveTab] = useState<'config' | 'agenda'>('config');
+  const [activeTab, setActiveTab] = useState<'config' | 'midia' | 'agenda'>('config');
   const [settings, setSettings] = useState(initialData.settings);
   const [services, setServices] = useState(initialData.services);
   const [plans, setPlans] = useState(() => {
@@ -289,7 +289,13 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
               onClick={() => setActiveTab('config')}
               className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'config' ? 'bg-gold text-zinc-950' : 'text-zinc-400 hover:text-white'}`}
             >
-              Configurações
+              Serviços & Info
+            </button>
+            <button
+              onClick={() => setActiveTab('midia')}
+              className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'midia' ? 'bg-gold text-zinc-950' : 'text-zinc-400 hover:text-white'}`}
+            >
+              Mídia & Galeria
             </button>
             <button
               onClick={() => setActiveTab('agenda')}
@@ -300,7 +306,7 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
           </div>
         </div>
         <div className="flex gap-4">
-          {activeTab === 'config' && (
+          {(activeTab === 'config' || activeTab === 'midia') && (
             <button
               onClick={handleSave}
               disabled={isSaving}
@@ -343,39 +349,33 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none"
                   />
                 </div>
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-sm text-zinc-400 uppercase tracking-widest">Logo da Barbearia</label>
-                  <div className="flex gap-4 items-center">
-                    <input
-                      type="text"
-                      value={settings.logo_url || ''}
-                      onChange={(e) => setSettings({ ...settings, logo_url: e.target.value })}
-                      placeholder="URL da logo (fundo transparente PNG recomendado) ou faça upload"
-                      className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none"
-                    />
-                    <input
-                      type="file"
-                      ref={logoInputRef}
-                      onChange={handleLogoUpload}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    <button
-                      onClick={() => logoInputRef.current?.click()}
-                      disabled={isUploadingLogo}
-                      className="bg-zinc-800 hover:bg-zinc-700 text-gold px-4 py-3 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50"
-                    >
-                      <Upload className="w-5 h-5" />
-                      {isUploadingLogo ? `Enviando...` : 'Upload da Logo'}
-                    </button>
-                  </div>
-                  {settings.logo_url && (
-                    <div className="mt-4 p-4 bg-zinc-900 rounded-lg inline-block border border-zinc-800">
-                      <img src={settings.logo_url} alt="Logo Preview" className="h-16 object-contain" />
-                    </div>
-                  )}
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400 uppercase tracking-widest">Instagram (ex: @fonsecabarber)</label>
+                  <input
+                    type="text"
+                    value={settings.instagram_handle || ''}
+                    onChange={(e) => setSettings({ ...settings, instagram_handle: e.target.value })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none"
+                  />
                 </div>
-
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400 uppercase tracking-widest">Link do Instagram</label>
+                  <input
+                    type="text"
+                    value={settings.instagram_link || ''}
+                    onChange={(e) => setSettings({ ...settings, instagram_link: e.target.value })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400 uppercase tracking-widest">Endereço Completo</label>
+                  <input
+                    type="text"
+                    value={settings.address || ''}
+                    onChange={(e) => setSettings({ ...settings, address: e.target.value })}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none"
+                  />
+                </div>
                 <div className="md:col-span-2 space-y-2">
                   <label className="text-sm text-zinc-400 uppercase tracking-widest">Subtítulo Hero</label>
                   <textarea
@@ -384,45 +384,51 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none h-24"
                   />
                 </div>
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-sm text-zinc-400 uppercase tracking-widest">Vídeo de Fundo</label>
-                  <div className="flex gap-4 items-center">
-                    <input
-                      type="text"
-                      value={settings.hero_video}
-                      onChange={(e) => setSettings({ ...settings, hero_video: e.target.value })}
-                      placeholder="URL do vídeo ou faça upload"
-                      className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none"
-                    />
-                    <input
-                      type="file"
-                      ref={videoInputRef}
-                      onChange={handleVideoUpload}
-                      accept="video/*"
-                      className="hidden"
-                    />
-                    <button
-                      onClick={() => videoInputRef.current?.click()}
-                      disabled={isUploading}
-                      className="bg-zinc-800 hover:bg-zinc-700 text-gold px-4 py-3 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50"
-                    >
-                      <Upload className="w-5 h-5" />
-                      {isUploading ? `Enviando ${uploadProgress}%` : 'Upload do PC'}
-                    </button>
-                  </div>
-                  {isUploading && (
-                    <div className="w-full bg-zinc-950 h-2 rounded-full overflow-hidden mt-2 border border-zinc-800">
-                      <div 
-                        className="bg-gold h-full transition-all duration-300" 
-                        style={{ width: `${uploadProgress}%` }}
-                      />
-                    </div>
-                  )}
-                </div>
               </div>
             </section>
 
-            {/* Services */}
+            {/* Estatisticas */}
+            <section className="space-y-6">
+              <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <Star className="text-gold" /> Estatísticas (Home)
+                </h2>
+              </div>
+              <div className="grid md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400">Anos de Tradição</label>
+                  <input
+                    value={settings.stat_anos || '5+'}
+                    onChange={(e) => setSettings({ ...settings, stat_anos: e.target.value })}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded p-2 focus:border-gold outline-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400">Clientes Satisfeitos</label>
+                  <input
+                    value={settings.stat_clientes || '5000+'}
+                    onChange={(e) => setSettings({ ...settings, stat_clientes: e.target.value })}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded p-2 focus:border-gold outline-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400">Avaliação Média</label>
+                  <input
+                    value={settings.stat_nota || '5.0/5'}
+                    onChange={(e) => setSettings({ ...settings, stat_nota: e.target.value })}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded p-2 focus:border-gold outline-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400">Atendimento</label>
+                  <input
+                    value={settings.stat_atendimento || 'Premium'}
+                    onChange={(e) => setSettings({ ...settings, stat_atendimento: e.target.value })}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded p-2 focus:border-gold outline-none"
+                  />
+                </div>
+              </div>
+            </section>
             <section className="space-y-6">
               <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
                 <h2 className="text-xl font-bold flex items-center gap-2">
@@ -547,6 +553,83 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
                     </button>
                   </div>
                 ))}
+              </div>
+            </section>
+          </div>
+        ) : activeTab === 'midia' ? (
+          <div className="space-y-12">
+            {/* Logo */}
+            <section className="space-y-6">
+              <h2 className="text-xl font-bold flex items-center gap-2 border-b border-zinc-800 pb-2">
+                <ImageIcon className="text-gold" /> Logomarca e Identidade
+              </h2>
+              <div className="space-y-2">
+                <label className="text-sm text-zinc-400 uppercase tracking-widest">Logo da Barbearia</label>
+                <div className="flex gap-4 items-center">
+                  <input
+                    type="text"
+                    value={settings.logo_url || ''}
+                    onChange={(e) => setSettings({ ...settings, logo_url: e.target.value })}
+                    placeholder="URL da logo (fundo transparente PNG recomendado) ou faça upload"
+                    className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none"
+                  />
+                  <input
+                    type="file"
+                    ref={logoInputRef}
+                    onChange={handleLogoUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <button
+                    onClick={() => logoInputRef.current?.click()}
+                    disabled={isUploadingLogo}
+                    className="bg-zinc-800 hover:bg-zinc-700 text-gold px-4 py-3 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50"
+                  >
+                    <Upload className="w-5 h-5" />
+                    {isUploadingLogo ? `Enviando...` : 'Upload da Logo'}
+                  </button>
+                </div>
+                {settings.logo_url && (
+                  <div className="mt-4 p-4 bg-zinc-900 rounded-lg inline-block border border-zinc-800">
+                    <img src={settings.logo_url} alt="Logo Preview" className="h-16 object-contain" />
+                  </div>
+                )}
+              </div>
+              
+              <div className="space-y-2 pt-6">
+                <label className="text-sm text-zinc-400 uppercase tracking-widest">Vídeo de Fundo (Página Inicial)</label>
+                <div className="flex gap-4 items-center">
+                  <input
+                    type="text"
+                    value={settings.hero_video}
+                    onChange={(e) => setSettings({ ...settings, hero_video: e.target.value })}
+                    placeholder="URL do vídeo ou faça upload"
+                    className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg p-3 focus:border-gold outline-none"
+                  />
+                  <input
+                    type="file"
+                    ref={videoInputRef}
+                    onChange={handleVideoUpload}
+                    accept="video/*"
+                    className="hidden"
+                  />
+                  <button
+                    onClick={() => videoInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="bg-zinc-800 hover:bg-zinc-700 text-gold px-4 py-3 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50"
+                  >
+                    <Upload className="w-5 h-5" />
+                    {isUploading ? `Enviando ${uploadProgress}%` : 'Upload de Vídeo'}
+                  </button>
+                </div>
+                {isUploading && (
+                  <div className="w-full bg-zinc-950 h-2 rounded-full overflow-hidden mt-2 border border-zinc-800">
+                    <div 
+                      className="bg-gold h-full transition-all duration-300" 
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                )}
               </div>
             </section>
 
