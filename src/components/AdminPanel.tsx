@@ -1,36 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Save, Plus, Trash2, X, Image as ImageIcon, Video, Settings, Scissors, Calendar, Upload, Check, Clock, LayoutDashboard, BarChart3, Users, Eye } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
-
-const getSupabase = async () => {
-  let supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  let supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    try {
-      const res = await fetch('/api/supabase-config');
-      if (res.ok) {
-        const config = await res.json();
-        supabaseUrl = config.url;
-        supabaseKey = config.anonKey;
-      }
-    } catch (e) {
-      console.error("Failed to fetch Supabase config:", e);
-    }
-  }
-
-  if (!supabaseUrl || !supabaseKey || supabaseUrl.trim() === "" || supabaseKey.trim() === "") {
-    throw new Error("Configuração do Supabase ausente. Verifique SUPABASE_URL e SUPABASE_ANON_KEY nas variáveis de ambiente do projeto.");
-  }
-
-  try {
-    new URL(supabaseUrl);
-  } catch (e) {
-    throw new Error(`A URL do Supabase fornecida é inválida: "${supabaseUrl}". Certifique-se de que começa com https://`);
-  }
-
-  return createClient(supabaseUrl, supabaseKey);
-};
+import { supabase } from '../lib/supabaseClient';
 
 interface AdminProps {
   onClose: () => void;
@@ -76,26 +46,30 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
     setIsSaving(true);
     try {
       const finalSettings = { ...settings, plans: JSON.stringify(plans) };
-      await fetch('/api/admin/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ settings: finalSettings })
-      });
-      await fetch('/api/admin/services', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ services })
-      });
-      await fetch('/api/admin/gallery', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gallery })
-      });
-      await fetch('/api/admin/video-gallery', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ video_gallery: videoGallery })
-      });
+      
+      for (const [key, value] of Object.entries(finalSettings)) {
+        await supabase.from('settings').upsert({ key, value });
+      }
+
+      await supabase.from('services').delete().neq('id', 0);
+      if (services.length > 0) {
+        await supabase.from('services').insert(services.map((s: any) => ({
+          name: s.name,
+          price: s.price,
+          desc: s.desc
+        })));
+      }
+
+      await supabase.from('gallery').delete().neq('id', 0);
+      if (gallery.length > 0) {
+        await supabase.from('gallery').insert(gallery.filter((url: string) => !!url).map((url: string) => ({ url })));
+      }
+
+      await supabase.from('video_gallery').delete().neq('id', 0);
+      if (videoGallery.length > 0) {
+        await supabase.from('video_gallery').insert(videoGallery.filter((url: string) => !!url).map((url: string) => ({ url })));
+      }
+      
       onUpdate();
       alert('Informações atualizadas com sucesso!');
     } catch (error) {
@@ -114,7 +88,6 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
     setUploadProgress(0);
 
     try {
-      const supabase = await getSupabase();
       const fileExt = file.name.split('.').pop();
       const fileName = `hero-${Date.now()}.${fileExt}`;
       
@@ -150,7 +123,6 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
     setLogoUploadProgress(0);
 
     try {
-      const supabase = await getSupabase();
       const fileExt = file.name.split('.').pop();
       const fileName = `logo-${Date.now()}.${fileExt}`;
       
@@ -186,7 +158,6 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
     setGalleryUploadProgress(0);
 
     try {
-      const supabase = await getSupabase();
       const fileExt = file.name.split('.').pop();
       const fileName = `gallery-video-${Date.now()}.${fileExt}`;
       
@@ -223,7 +194,6 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
     setGalleryImageUploadProgress(0);
 
     try {
-      const supabase = await getSupabase();
       const fileExt = file.name.split('.').pop();
       const fileName = `gallery-image-${Date.now()}.${fileExt}`;
       
@@ -253,11 +223,7 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
 
   const updateAppointmentStatus = async (id: number, status: string) => {
     try {
-      await fetch(`/api/admin/appointments/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      });
+      await supabase.from('appointments').update({ status }).eq('id', id);
       onUpdate();
     } catch (error) {
       console.error(error);
@@ -267,9 +233,7 @@ export default function AdminPanel({ onClose, initialData, onUpdate }: AdminProp
   const deleteAppointment = async (id: number) => {
     if (!confirm('Excluir este agendamento?')) return;
     try {
-      await fetch(`/api/admin/appointments/${id}`, {
-        method: 'DELETE'
-      });
+      await supabase.from('appointments').delete().eq('id', id);
       onUpdate();
     } catch (error) {
       console.error(error);

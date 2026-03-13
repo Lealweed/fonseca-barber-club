@@ -4,22 +4,24 @@ import React, { useState, useEffect } from 'react';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import ChatBot from './components/ChatBot';
 import AdminPanel from './components/AdminPanel';
+import { fetchContentFromSupabase, supabase } from './lib/supabaseClient';
 
 export default function App() {
   const [content, setContent] = useState<any>(null);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<string>('');
   const [bookingForm, setBookingForm] = useState({ name: '', date: '', time: '' });
 
   const fetchContent = async () => {
     try {
-      const res = await fetch('/api/content');
-      const data = await res.json();
+      const data = await fetchContentFromSupabase();
       setContent(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching content:", error);
+      setErrorMsg(error.message || "Erro desconhecido ao carregar dados do Supabase.");
     } finally {
       setIsLoading(false);
     }
@@ -32,19 +34,16 @@ export default function App() {
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch('/api/admin/appointments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          client_name: bookingForm.name,
-          service_name: selectedService || 'Geral',
-          date: bookingForm.date,
-          time: bookingForm.time
-        })
+      await supabase.from('appointments').insert({
+        client_name: bookingForm.name,
+        service_name: selectedService || 'Geral',
+        date: bookingForm.date,
+        time: bookingForm.time,
+        status: 'Pendente'
       });
       
       const message = encodeURIComponent(`Olá! Meu nome é ${bookingForm.name}. Gostaria de agendar ${selectedService} para o dia ${bookingForm.date} às ${bookingForm.time}.`);
-      window.open(`https://wa.me/${content.settings.whatsapp_number}?text=${message}`, '_blank');
+      window.open(`https://wa.me/${content?.settings?.whatsapp_number}?text=${message}`, '_blank');
       setIsBookingOpen(false);
       fetchContent();
     } catch (error) {
@@ -52,9 +51,22 @@ export default function App() {
     }
   };
 
+  if (errorMsg) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 text-center">
+        <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-2xl max-w-lg">
+          <Settings className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-white mb-2">Erro de Conexão</h2>
+          <p className="text-red-200 text-sm mb-4">{errorMsg}</p>
+          <p className="text-zinc-400 text-xs">Vá nas configurações da Vercel (Environment Variables) e adicione as chaves <b>VITE_SUPABASE_URL</b> e <b>VITE_SUPABASE_ANON_KEY</b>.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading || !content) {
     return (
-      <div className="h-screen bg-zinc-950 flex items-center justify-center">
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <Loader2 className="w-12 h-12 text-gold animate-spin" />
       </div>
     );
