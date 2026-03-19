@@ -599,10 +599,6 @@ export default function App() {
               <CalendarIcon className="w-6 h-6" />
               Agendar Agora
             </button>
-            <button className="border-2 border-gold text-gold px-12 py-5 rounded-2xl font-bold text-lg flex items-center gap-3 hover:bg-gold/10 transition-all">
-              <Star className="w-6 h-6" />
-              Ver Planos
-            </button>
           </div>
         </div>
       </section>
