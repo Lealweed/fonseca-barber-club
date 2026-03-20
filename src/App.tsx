@@ -34,6 +34,23 @@ const DEFAULT_VIDEO_GALLERY = [
   `${SUPABASE_ASSET_BASE_URL}/gallery-video-1771970910931.webm`,
   `${SUPABASE_ASSET_BASE_URL}/gallery-video-1771970955047.MOV`
 ];
+const DEFAULT_PLANS = [
+  {
+    name: 'Corte Ilimitado',
+    price: 75,
+    benefits: ['Cortes ilimitados no mes', 'Atendimento prioritario', 'Economia recorrente']
+  },
+  {
+    name: 'Barba Ilimitada',
+    price: 135,
+    benefits: ['Barba ilimitada no mes', 'Acabamento premium', 'Conforto e constancia']
+  },
+  {
+    name: 'Cabelo e Barba',
+    price: 189,
+    benefits: ['Cabelo e barba ilimitados', 'Melhor custo-beneficio', 'Visual impecavel sempre']
+  }
+];
 
 // ✅ FALLBACK: Dados padrão quando Supabase não responde
 function getMergedContent() {
@@ -64,11 +81,38 @@ function buildWhatsAppLink(number: string, message: string) {
   return `https://wa.me/${sanitizePhoneNumber(number)}?text=${encodeURIComponent(message)}`;
 }
 
+function formatCurrencyBRL(value: number) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+}
+
+function normalizePlanBenefits(raw: unknown): string[] {
+  if (Array.isArray(raw)) {
+    return raw.filter((item) => typeof item === 'string' && item.trim());
+  }
+
+  if (typeof raw === 'string' && raw.trim()) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.filter((item) => typeof item === 'string' && item.trim());
+      }
+    } catch {
+      return raw
+        .split(/\n|\||;/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+  }
+
+  return [];
+}
+
 export default function App() {
   const [content, setContent] = useState<any>(null);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [experienceIndex, setExperienceIndex] = useState(0);
+  const [plans, setPlans] = useState<any[]>(DEFAULT_PLANS);
 
   // ✅ RESTAURADO: Fetch dinâmico de dados do Supabase
   const fetchContent = async () => {
@@ -87,11 +131,47 @@ export default function App() {
     fetchContent();
   }, []);
 
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchPlans = async () => {
+      if (!supabase) {
+        if (mounted) setPlans(DEFAULT_PLANS);
+        return;
+      }
+
+      const { data, error } = await supabase.from('plans').select('*').order('id', { ascending: true });
+
+      if (error || !data?.length) {
+        if (mounted) setPlans(DEFAULT_PLANS);
+        return;
+      }
+
+      const parsedPlans = data.map((plan: any, index: number) => {
+        const rawPrice = Number(plan.price ?? plan.valor ?? plan.amount ?? 0);
+        const benefits = normalizePlanBenefits(plan.benefits ?? plan.beneficios ?? plan.description);
+
+        return {
+          name: plan.name || plan.nome || plan.title || `Plano ${index + 1}`,
+          price: Number.isFinite(rawPrice) ? rawPrice : 0,
+          benefits: benefits.length ? benefits : ['Beneficios a definir no painel']
+        };
+      });
+
+      if (mounted) setPlans(parsedPlans);
+    };
+
+    fetchPlans();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   // ✅ RESTAURADO: Dados dinâmicos do Supabase com fallbacks
   const mergedContent = content || getMergedContent();
   const { settings, gallery, video_gallery } = mergedContent;
   const whatsappNumber = sanitizePhoneNumber(settings.whatsapp_number);
-  const heroVideoUrl = settings.hero_video || HERO_VIDEO_PRIMARY;
+  const heroVideoUrl = settings.hero_video || HERO_VIDEO_FALLBACK;
   const instagramLink = settings.instagram_link || '#';
   const instagramHandle = settings.instagram_handle || '@fonsecabarberclub';
   const bookingLink = buildWhatsAppLink(whatsappNumber, 'Ola! Quero agendar um horario na Fonseca Barber Club.');
@@ -141,16 +221,18 @@ export default function App() {
   const currentExperienceItem = experienceItems[experienceIndex];
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-zinc-950 text-zinc-100 selection:bg-amber-300 selection:text-black">
-      <div className="fixed inset-0 -z-50 overflow-hidden bg-black">
-        {/* ✅ RESTAURADO: Vídeo Hero com URLs dinâmicas do Supabase */}
-        <video autoPlay={true} loop={true} muted={true} playsInline={true} preload="auto" className="absolute inset-0 w-full h-full object-cover opacity-100">
-          <source src={heroVideoUrl} type="video/mp4" />
-          <source src={HERO_VIDEO_FALLBACK} type="video/webm" />
-        </video>
-      </div>
-      <div className="fixed inset-0 -z-40 bg-[linear-gradient(180deg,_rgba(0,0,0,0.5)_0%,_rgba(0,0,0,0.4)_50%,_rgba(0,0,0,0.6)_100%)]" />
-
+    <div className="min-h-screen overflow-x-hidden bg-transparent text-zinc-100 selection:bg-amber-300 selection:text-black">
+      <video
+        src={heroVideoUrl}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        className="fixed top-0 left-0 w-full h-screen object-cover -z-20"
+      />
+      <div className="fixed top-0 left-0 w-full h-screen bg-black/60 -z-10"></div>
+      <div className="fixed top-0 left-0 w-full h-40 bg-gradient-to-b from-black/90 via-black/70 to-transparent -z-10"></div>
       {supabase ? (
         <button
           onClick={() => setIsAdminOpen(true)}
@@ -165,7 +247,7 @@ export default function App() {
         <AdminPanel initialData={mergedContent} onClose={() => setIsAdminOpen(false)} onUpdate={fetchContent} />
       ) : null}
 
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-black/35 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-white/5 bg-black/75 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-6 lg:px-8">
           <a href="#inicio" className="flex items-center gap-3">
             {settings.logo_url ? (
@@ -189,6 +271,7 @@ export default function App() {
 
           <nav className="hidden items-center gap-7 text-sm text-white/68 lg:flex">
             <a href="#autoridade" className="transition-colors hover:text-white">Autoridade</a>
+            <a href="#clube" className="transition-colors hover:text-white">Clube</a>
             <a href="#social" className="transition-colors hover:text-white">Contato</a>
             <a href="#experiencia" className="transition-colors hover:text-white">Experiencia</a>
           </nav>
@@ -205,8 +288,8 @@ export default function App() {
         </div>
       </header>
 
-      <main>
-        <section id="inicio" className="relative">
+      <main className="bg-transparent">
+        <section id="inicio" className="relative isolate overflow-hidden">
           <div className="mx-auto grid min-h-[calc(100vh-81px)] max-w-7xl items-center gap-12 px-5 py-16 sm:px-6 md:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-24">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
@@ -272,6 +355,51 @@ export default function App() {
                 </div>
               </div>
             </motion.div>
+          </div>
+        </section>
+
+        <section id="clube" className="relative py-16 sm:py-24 lg:py-28">
+          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+            <div className="mb-12 text-center">
+              <p className="text-xs uppercase tracking-[0.32em] text-amber-300/75">Clube Fonseca</p>
+              <h2 className="mt-4 font-display text-4xl font-bold text-white sm:text-5xl md:text-6xl">
+                Planos de Assinatura
+              </h2>
+              <p className="mt-4 text-white/65">Escolha seu plano e mantenha seu visual impecavel o mes inteiro.</p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {plans.map((plan, index) => (
+                <article
+                  key={`${plan.name}-${index}`}
+                  className="rounded-[28px] border border-white/10 bg-black/35 p-6 backdrop-blur-xl"
+                >
+                  <p className="text-xs uppercase tracking-[0.26em] text-amber-200/75">Plano {index + 1}</p>
+                  <h3 className="mt-3 font-display text-2xl font-bold text-white">{plan.name}</h3>
+                  <p className="mt-4 text-3xl font-bold text-amber-300">{formatCurrencyBRL(plan.price)}</p>
+                  <p className="text-xs uppercase tracking-[0.22em] text-white/45">/ mes</p>
+
+                  <ul className="mt-5 space-y-2 text-sm text-white/75">
+                    {plan.benefits.map((benefit: string, benefitIndex: number) => (
+                      <li key={`${plan.name}-benefit-${benefitIndex}`} className="flex items-start gap-2">
+                        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+                        <span>{benefit}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <a
+                    href={buildWhatsAppLink(whatsappNumber, `Ola! Quero assinar o plano ${plan.name}.`) }
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-300 px-4 py-3 text-sm font-semibold text-black transition hover:bg-amber-200"
+                  >
+                    Assinar pelo WhatsApp
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
