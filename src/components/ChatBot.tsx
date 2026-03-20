@@ -3,20 +3,24 @@ import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 import { MessageSquare, X, Send, Loader2, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-const SYSTEM_INSTRUCTION = `Você é o assistente virtual da Fonseca Barber Club. 
+function getSystemInstruction(number: string) {
+  return `Você é o assistente virtual da Fonseca Barber Club. 
 Seu objetivo é ajudar os clientes com dúvidas sobre a barbearia e incentivá-los a agendar um horário via WhatsApp.
 A barbearia oferece:
-- Corte de Cabelo (Degradê, Social, etc.) - R$ 50
-- Barba (Toalha quente, alinhamento) - R$ 40
-- Combo (Corte + Barba) - R$ 80
-- Ambiente: Cadeiras de couro, cerveja gelada, sinuca e música boa.
-Localização: Rua das Barbearias, 123, Centro.
-Horário: Seg-Sáb, 09h às 20h.
+- Corte de Cabelo (Degradê, Social, etc.)
+- Barba (Toalha quente, alinhamento)
+- Combo (Corte + Barba)
+- Ambiente premium com foco em conforto e estilo.
 
 Sempre seja cordial, use um tom masculino e profissional. 
-Se o usuário quiser agendar, forneça o link do WhatsApp: https://wa.me/5511999999999`;
+Se o usuário quiser agendar, forneça o link do WhatsApp: https://wa.me/${number}`;
+}
 
-export default function ChatBot() {
+interface ChatBotProps {
+  number?: string;
+}
+
+export default function ChatBot({ number = '5511999999999' }: ChatBotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: 'user' | 'bot', text: string }[]>([
     { role: 'bot', text: 'Olá! Sou o assistente da Fonseca Barber Club. Como posso te ajudar hoje?' }
@@ -45,7 +49,7 @@ export default function ChatBot() {
         model: "gemini-3.1-pro-preview",
         contents: userMessage,
         config: {
-          systemInstruction: SYSTEM_INSTRUCTION,
+          systemInstruction: getSystemInstruction(number),
           thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH }
         },
       });
