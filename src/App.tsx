@@ -112,7 +112,7 @@ export default function App() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [experienceIndex, setExperienceIndex] = useState(0);
-  const [plans, setPlans] = useState<any[]>(DEFAULT_PLANS);
+  const [plans, setPlans] = useState<any[]>([]);
 
   // ✅ RESTAURADO: Fetch dinâmico de dados do Supabase
   const fetchContent = async () => {
@@ -136,20 +136,20 @@ export default function App() {
 
     const fetchPlans = async () => {
       if (!supabase) {
-        if (mounted) setPlans(DEFAULT_PLANS);
+        if (mounted) setPlans([]);
         return;
       }
 
       const { data, error } = await supabase.from('plans').select('*').order('id', { ascending: true });
 
       if (error || !data?.length) {
-        if (mounted) setPlans(DEFAULT_PLANS);
+        if (mounted) setPlans([]);
         return;
       }
 
       const parsedPlans = data.map((plan: any, index: number) => {
         const rawPrice = Number(plan.price ?? plan.valor ?? plan.amount ?? 0);
-        const benefits = normalizePlanBenefits(plan.benefits ?? plan.beneficios ?? plan.description);
+        const benefits = normalizePlanBenefits(plan.features ?? plan.benefits ?? plan.beneficios ?? plan.description);
 
         return {
           name: plan.name || plan.nome || plan.title || `Plano ${index + 1}`,
@@ -187,6 +187,7 @@ export default function App() {
   ];
 
   const experienceItems = liveExperienceItems.length ? liveExperienceItems : DEFAULT_GALLERY.map((url) => ({ type: 'image', url }));
+  const plansToRender = plans.length ? plans : DEFAULT_PLANS;
 
   useEffect(() => {
     if (experienceItems.length <= 1) {
@@ -369,7 +370,7 @@ export default function App() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {plans.map((plan, index) => (
+              {plansToRender.map((plan, index) => (
                 <article
                   key={`${plan.name}-${index}`}
                   className="rounded-[28px] border border-white/10 bg-black/35 p-6 backdrop-blur-xl"
@@ -380,7 +381,7 @@ export default function App() {
                   <p className="text-xs uppercase tracking-[0.22em] text-white/45">/ mes</p>
 
                   <ul className="mt-5 space-y-2 text-sm text-white/75">
-                    {plan.benefits.map((benefit: string, benefitIndex: number) => (
+                    {(plan.features ?? plan.benefits ?? []).map((benefit: string, benefitIndex: number) => (
                       <li key={`${plan.name}-benefit-${benefitIndex}`} className="flex items-start gap-2">
                         <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
                         <span>{benefit}</span>
