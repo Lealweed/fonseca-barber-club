@@ -52,6 +52,94 @@ const DEFAULT_PLANS = [
   }
 ];
 
+const HAIRCUT_CATALOG = [
+  {
+    category: 'Degradê',
+    name: 'Degradê Baixo Clássico',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuBBkz8ad-Z-68s4e5kuWsmbdoKnzvdYFiebvivdGKEGnUJpFpEhWX4VS2Obkvj8qz0y_cGddiqbBdIRULk1wf-1SMDusxarl71aCzleci_DFBZ88FdtgBJ7T9lWtyVUyzu5qIyG8xh3hElMfRXoFdeGizDBoPifABvv0wfVxyfI8kPWDA7QEz91t_EH76rTjleLXu4s32TkATYGBd7BuD3DdaCLv_KE8Q_ZytrwQ2cP2JyREuJnuhbB-4fnSFdIRULxc88sP9wj60YJ',
+    description:
+      'Uma transição suave e impecável nas laterais que exala sofisticação, preservando o volume estratégico no topo para um visual polido e de autoridade.',
+    duration: '45 min',
+    style: 'Executivo',
+    occasion: 'Eventos especiais',
+    maintenance: 'Alta (15 dias)',
+  },
+  {
+    category: 'Social',
+    name: 'Social com Risca',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuCoGwfbCksU3JQNfamANfKNQZb12JAICbVwngMYdMFzJ246zuJpFF0TuBbm4AjIe7W3ms6ENSCAT0USVou6rZNZjU7JDj_boDJ6PlCd9tfuX5BFn5Z4lZZIkX9KHYeT3HPB6oUucEDyt3aKYUBg-wVNFENinwFE4kaGpU5mOoKOQF2egD_7thzNdu1F7sKSqqCTYt03Me55fKSZrkYGWAD_kKtPH98SS4vy7JMHDXQjhSyYXacCiSzKxVghXZP1OSA1Jjj2d3B4r2Z_',
+    description:
+      'A clássica risca lateral feita à navalha traz definição absoluta ao rosto. Ideal para o homem que busca um perfil nítido e impecável na rotina corporativa.',
+    duration: '50 min',
+    style: 'Executivo',
+    occasion: 'Dia a dia',
+    maintenance: 'Média (21 dias)',
+  },
+  {
+    category: 'Moderno',
+    name: 'Crop Texturizado',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuCJgASJ-2Nm1tJTsjgA9Cg00WaSQava1L4B3C5kZglj760pllRdrBEZOdiI19KQyeDuKwWo-_BGGdxx8s23qm_cYthFSH5WQymCdqRBV4oXwt8jLWEpMpU0w3Ozt1e4c4seD97NkMa-8lzfvAcpE96FBgqwqG7u2LGlT2cKNKQIrlF_5EkaTgFvsBTAaAtdPa4tJoVysc7D4XhmmpbF6HorRYd_Vnjtp2rN5qp95oqrTlkTND5OeOl4AvvbMzYFujbkeDmC8A5ItXnA',
+    description:
+      'Modernidade urbana expressa em camadas e texturas marcantes. Um corte despojado com acabamento frontal rigoroso, perfeito para quem gosta de presença e estilo.',
+    duration: '40 min',
+    style: 'Moderno urbano',
+    occasion: 'Eventos, festas e rotina social',
+    maintenance: 'Baixa (30 dias)',
+  },
+  {
+    category: 'Clássico',
+    name: 'Pompadour Moderno',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuDyT6zYrDRLJj1T_xCFJdbD4ZEvJk0B3CYnQeAn7NqIy-zOu79n7vD4ZdSMWKGrNtymFBCclQRKlfugTLHiJHkkxIKSeCO6ze6HnA7ttihPDsGYT5qSSfd3QuUVqbUDRur5EcvXw5oSODnkDRDzmvUVFW3ANd0FNVFAgqDQeLRC5mcPbreLt4Ht0Tkr3k18wskRoj_liLADMWF8qi9G5d7LtL3BjycT8vssRFUpv6kmjIJZAWxFuOV6KEQpWrhos77dXdSKRCCTCGkD',
+    description:
+      'O ápice da elegância clássica reinterpretada com ousadia. Volume esculpido no topo com laterais polidas para uma presença visual inesquecível.',
+    duration: '60 min',
+    style: 'Marcante',
+    occasion: 'Eventos especiais',
+    maintenance: 'Alta (10 dias)',
+  },
+  {
+    category: 'Barba + Cabelo',
+    name: 'Barba + Cabelo Premium',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuCj5qB3p4mL3JHVWb2t4BsN0CUAuLiZ39-HEL6bPkPzY4-94RzpI9qprzEdYSZ7Pgsgg7XdWSiEB4L5kVwvspwNhzUWTt_V9BvQ7jzuFvUv8o4TSc328FAHuAogrX_c7-j0dWqi6XprEu-oc72ntldyeJ9Za74gQg9RVAiOXDWf4Wlkm94MpHceG_qhpNod6aG0CRae-V45xXX_AnGEooCYt0KLTGV1bPwUIta2nundnMlaiLfVTkv2AtUAAleYcMpZ18TcNgpZVLoF',
+    description:
+      'Um ritual completo de visagismo exclusivo Fonseca. O alinhamento da barba integrado ao corte para máxima harmonia e presença.',
+    duration: '90 min',
+    style: 'Assinatura',
+    occasion: 'Dia a dia e ocasiões especiais',
+    maintenance: 'Média (15 dias)',
+  },
+  {
+    category: 'Baixa manutenção',
+    name: 'Buzz Cut Premium',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuCiOKiZrZg5vsWbCQK9RZAPkLsAYbeLmRzbfgB6nuYieDj6f28_C7oQtq-DOZLpGyhMgIfy7AQlmKFFw1JYAUv1egK6XpPo0q3n0MboNYOu99dBTLE5UFr1M18WrcWmN5r-Mj4m6x2pIFYAOhF3Ldd_XnG8TO0lNpYGHCj0OWyfCMeOyl_OfWa9mbuLaE7piE17yGQjxbg0aZbqp9ROcZeNIun1wAYhqUmAKknmW0xvWMSGpGDWt2dFoZlTwTSMfvGT_-kJpMCiZMCE',
+    description:
+      'Minimalismo levado à perfeição técnica. Um degradê cirúrgico e contornos impecáveis para quem busca praticidade sem abrir mão do estilo.',
+    duration: '30 min',
+    style: 'Minimalista',
+    occasion: 'Dia a dia',
+    maintenance: 'Média (14 dias)',
+  },
+];
+
+const HAIRCUT_FILTERS = [
+  'Todos',
+  'Social',
+  'Degradê',
+  'Moderno',
+  'Clássico',
+  'Infantil',
+  'Barba + Cabelo',
+  'Eventos',
+  'Baixa manutenção',
+  'Mais pedidos',
+];
+
 // ✅ FALLBACK: Dados padrão quando Supabase não responde
 function getMergedContent() {
   return {
@@ -113,6 +201,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [experienceIndex, setExperienceIndex] = useState(0);
   const [plans, setPlans] = useState<any[]>([]);
+
+  const [activeHaircutFilter, setActiveHaircutFilter] = useState('Todos');
 
   // ✅ RESTAURADO: Fetch dinâmico de dados do Supabase
   const fetchContent = async () => {
@@ -188,6 +278,10 @@ export default function App() {
 
   const experienceItems = liveExperienceItems.length ? liveExperienceItems : DEFAULT_GALLERY.map((url) => ({ type: 'image', url }));
   const plansToRender = plans.length ? plans : DEFAULT_PLANS;
+  const filteredHaircuts =
+    activeHaircutFilter === 'Todos'
+      ? HAIRCUT_CATALOG
+      : HAIRCUT_CATALOG.filter((item) => item.category === activeHaircutFilter);
 
   useEffect(() => {
     if (experienceItems.length <= 1) {
@@ -273,6 +367,7 @@ export default function App() {
           <nav className="hidden items-center gap-7 text-sm text-white/68 lg:flex">
             <a href="#autoridade" className="transition-colors hover:text-white">Autoridade</a>
             <a href="#clube" className="transition-colors hover:text-white">Clube</a>
+            <a href="#modelos" className="transition-colors hover:text-white">Modelos</a>
             <a href="#social" className="transition-colors hover:text-white">Contato</a>
             <a href="#experiencia" className="transition-colors hover:text-white">Experiencia</a>
           </nav>
@@ -400,6 +495,155 @@ export default function App() {
                   </a>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* NOVA SEÇÃO: Modelos de Corte */}
+        <section id="modelos" className="relative py-16 sm:py-24 lg:py-28">
+          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+            <div className="mb-14 text-center">
+              <p className="text-xs uppercase tracking-[0.32em] text-amber-300/75">Curadoria exclusiva</p>
+              <h2 className="mt-4 font-display text-4xl font-bold text-white sm:text-5xl md:text-6xl">
+                Modelos de Corte
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-white/65">
+                Explore nossa galeria de estilos assinada. Escolha o visual ideal para sua rotina,
+                ocasião e personalidade.
+              </p>
+            </div>
+
+            <div className="mb-12 flex flex-wrap justify-center gap-3">
+              {HAIRCUT_FILTERS.map((filter) => {
+                const isActive = activeHaircutFilter === filter;
+
+                return (
+                  <button
+                    key={filter}
+                    onClick={() => setActiveHaircutFilter(filter)}
+                    className={`px-5 py-2 text-[11px] uppercase tracking-[0.22em] transition-all ${
+                      isActive
+                        ? 'bg-amber-300 text-black'
+                        : 'border border-white/10 bg-white/[0.05] text-white/70 hover:bg-white/[0.08] hover:text-white'
+                    }`}
+                  >
+                    {filter}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+              {filteredHaircuts.map((cut) => (
+                <article
+                  key={cut.name}
+                  className="group overflow-hidden rounded-[28px] border border-white/10 bg-black/35 backdrop-blur-xl"
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden bg-zinc-900">
+                    <img
+                      src={cut.image}
+                      alt={cut.name}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  </div>
+
+                  <div className="space-y-4 p-6">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-[0.24em] text-amber-300/75">{cut.category}</p>
+                      <h3 className="mt-2 font-display text-2xl font-bold text-white">{cut.name}</h3>
+                    </div>
+
+                    <p className="text-sm leading-7 text-white/70">{cut.description}</p>
+
+                    <div className="grid grid-cols-2 gap-4 pt-2 text-sm">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-amber-300/65">Tempo</p>
+                        <p className="mt-1 text-white">{cut.duration}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-amber-300/65">Estilo</p>
+                        <p className="mt-1 text-white">{cut.style}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-amber-300/65">Ocasião</p>
+                        <p className="mt-1 text-white">{cut.occasion}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-amber-300/65">Manutenção</p>
+                        <p className="mt-1 text-white">{cut.maintenance}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3 pt-4">
+                      <a
+                        href={buildWhatsAppLink(
+                          whatsappNumber,
+                          `Ola! Quero agendar o modelo de corte "${cut.name}" na Fonseca Barber Club.`
+                        )}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-300 px-4 py-3 text-sm font-semibold text-black transition hover:bg-amber-200"
+                      >
+                        Quero esse corte
+                        <ArrowRight className="h-4 w-4" />
+                      </a>
+
+                      <a
+                        href={buildWhatsAppLink(
+                          whatsappNumber,
+                          `Ola! Quero saber mais sobre a simulacao no rosto para o corte "${cut.name}".`
+                        )}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white/80 transition hover:bg-white/[0.08] hover:text-white"
+                      >
+                        Ver em mim
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div className="mt-16 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] p-8 backdrop-blur-2xl sm:p-10 lg:p-14">
+              <div className="grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.3em] text-amber-300/75">Simulação com IA</p>
+                  <h3 className="mt-4 font-display text-3xl font-bold text-white sm:text-4xl md:text-5xl">
+                    Simulador de Estilo Fonseca
+                  </h3>
+                  <p className="mt-5 max-w-2xl text-base leading-8 text-white/65 sm:text-lg">
+                    Envie sua foto e visualize uma simulação ilustrativa inspirada no corte escolhido.
+                    Uma experiência pensada para ajudar você a decidir com mais confiança antes do agendamento.
+                  </p>
+
+                  <a
+                    href={buildWhatsAppLink(
+                      whatsappNumber,
+                      'Ola! Quero entrar na lista para testar a simulacao de corte no meu rosto.'
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-amber-300 px-6 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-amber-200"
+                  >
+                    Simular no meu rosto
+                    <Sparkles className="h-4 w-4" />
+                  </a>
+                </div>
+
+                <div className="relative aspect-square overflow-hidden rounded-[28px] border border-white/10 bg-black/30">
+                  <div className="absolute inset-4 flex flex-col items-center justify-center border border-amber-300/20">
+                    <Sparkles className="h-12 w-12 text-amber-300/35" />
+                    <p className="mt-4 text-[11px] uppercase tracking-[0.28em] text-amber-300/45">
+                      Aguardando captura facial
+                    </p>
+                  </div>
+                  <div className="absolute bottom-6 left-6 right-6 h-1 overflow-hidden bg-white/10">
+                    <div className="h-full w-1/3 animate-pulse bg-amber-300" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
